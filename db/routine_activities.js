@@ -111,14 +111,59 @@ async function destroyRoutineActivity(id) {
   }
 }
 
+/*
 async function canEditRoutineActivity(routineActivityId, userId) {
-  const {rows: [routineFromRoutineActivity]} = await client.query(`
-      SELECT * FROM routine_activities
+  try {
+    // Correct the case sensitivity issue by adding double quotes around "routineId"
+    const { rows: [routineActivity] } = await client.query(`
+      SELECT routines.creatorId FROM routine_activities
       JOIN routines ON routine_activities."routineId" = routines.id
-      AND routine_activities.id = $1
+      WHERE routine_activities.id = $1;
     `, [routineActivityId]);
-    return routineFromRoutineActivity.creatorId === userId;
+
+    if (!routineActivity) {
+      console.log('Routine activity not found.');
+      return false;
+    }
+
+    console.log(`Routine owner ID: ${routineActivity.creatorId}, User ID: ${userId}`);
+    return parseInt(routineActivity.creatorId) === parseInt(userId);
+  } catch (error) {
+    console.error(`Error checking edit permissions: ${error}`);
+    return false;
+  }
 }
+*/
+async function canEditRoutineActivity(routineActivityId, userId) {
+  try {
+    const { rows: [routineActivity] } = await client.query(`
+    SELECT routines."creatorId" FROM routine_activities
+    JOIN routines ON routine_activities."routineId" = routines.id
+    WHERE routine_activities.id = $1;
+`, [routineActivityId]);
+
+  console.log('Checked permissions for routineActivityId:', routineActivityId, 'with userId:', userId);
+
+
+      if (!routineActivity) {
+          console.log('Routine activity not found.');
+          return false;
+      }
+
+      console.log(`Routine owner ID: ${routineActivity.creatorId}, User ID: ${userId}`);
+      return routineActivity.creatorId === userId;
+  } catch (error) {
+      console.error(`Error checking edit permissions: ${error}`);
+      return false;
+      console.error('Failed to check permissions for routine activity:', error);
+
+  }
+}
+
+
+
+
+
 
 module.exports = {
   getRoutineActivityById,

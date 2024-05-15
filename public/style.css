@@ -34,3 +34,21 @@ h5 code {
   background: #eee;
   padding: 4px;
 }
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input, button {
+  margin-top: 10px;
+  padding: 8px;
+  width: 200px;
+}
+
+button {
+  cursor: pointer;
+}

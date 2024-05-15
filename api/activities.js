@@ -23,12 +23,30 @@ router.get('/:activityId/routines', async (req, res, next) => {
 // GET /api/activities
 router.get('/', async (req, res, next) => {
   try {
-    const activities = await getAllActivities();
-    res.send(activities);
+      const activities = await getAllActivities();
+      res.send(activities);
   } catch (error) {
-    next(error)
+      next(error)
   }
 })
+
+// GET Route for Single Activity
+router.get('/activities/:activityId', async (req, res, next) => {
+  try {
+      const { activityId } = req.params;
+      const activity = await getActivityById(activityId);
+      if (activity) {
+          res.status(200).json(activity);
+      } else {
+          res.status(404).send({
+              error: "Activity not found"
+          });
+      }
+  } catch (error) {
+      next(error);
+  }
+});
+
 
 // POST /api/activities
 router.post('/', requireUser, requiredNotSent({requiredParams: ['name', 'description']}), async (req, res, next) => {
